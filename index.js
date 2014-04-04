@@ -1,15 +1,11 @@
-var DynamoTable, async = require('async')
+var async = require('async')
+var dynamoTable = require('dynamo-table')
 
-try {
-  DynamoTable = require('dynamo-table').DynamoTable
-} catch (e) {
-  // Assume consumer will pass in dynamo table
-}
-
+module.exports = dynamoTable
 
 // Ensures that no more than capacityRatio * writeCapacity items are written per second
-DynamoTable.prototype.throttledBatchWrite = function(capacityRatio, items, cb) {
-  if (!(capacityRatio > 0)) return cb(new Error('capacityRatio must be positive'))
+dynamoTable.DynamoTable.prototype.throttledBatchWrite = function(capacityRatio, items, cb) {
+  if (!(capacityRatio > 0)) return cb(new Error('non-positive capacityRatio'))
 
   var self = this
   self.describeTable(function(err, info) {
