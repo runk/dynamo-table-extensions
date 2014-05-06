@@ -3,8 +3,10 @@ var dynamoTable = require('dynamo-table')
 
 module.exports = dynamoTable
 
+var proto = dynamoTable.DynamoTable.prototype
+
 // Ensures that no more than capacityRatio * writeCapacity items are written per second
-dynamoTable.DynamoTable.prototype.throttledBatchWrite = function(capacityRatio, items, cb) {
+proto.throttledBatchWrite = function(capacityRatio, items, cb) {
   if (!(capacityRatio > 0)) return cb(new Error('non-positive capacityRatio'))
 
   var self = this
@@ -34,3 +36,7 @@ dynamoTable.DynamoTable.prototype.throttledBatchWrite = function(capacityRatio, 
   })
 }
 
+
+proto.truncate = function(cb) {
+  async.series([this.deleteTableAndWait.bind(this), this.createTableAndWait.bind(this)], cb)
+}
