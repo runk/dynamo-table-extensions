@@ -40,3 +40,20 @@ proto.throttledBatchWrite = function(capacityRatio, items, cb) {
 proto.truncate = function(cb) {
   async.series([this.deleteTableAndWait.bind(this), this.createTableAndWait.bind(this)], cb)
 }
+
+
+proto.addNew = function(record, cb) {
+  var key = Array.isArray(this.key) ? this.key[0] : this.key;
+
+  if (record[key])
+    return this.put(record, cb);
+
+  var self = this;
+
+  // this.nextId is added by `dynamo-table-id`, which must be loaded
+  this.nextId(function(err, id) {
+    if (err) return cb(err);
+    record[key] = id;
+    self.put(record, cb);
+  });
+}
