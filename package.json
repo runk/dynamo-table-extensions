@@ -1,6 +1,6 @@
 {
   "name": "dynamo-table-extensions",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Adds higher-level methods to dynamo-table",
   "main": "index.js",
   "scripts": {
@@ -17,6 +17,9 @@
     "mapping"
   ],
   "author": "Francesco Orsenigo <francesco.orsenigo@gmail.com> (http://github.com/xarvh)",
+  "contributors": [
+    "Dmitry Shirokov <deadrunk@gmail.com>"
+  ],
   "license": "MIT",
   "devDependencies": {
     "should": "~2.0.2",

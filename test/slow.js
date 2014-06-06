@@ -35,17 +35,6 @@ describe('extensions', function() {
     table.deleteTableAndWait(done)
   })
 
-  beforeEach(function(done) {
-    table.scan(function(err, items) {
-      if (err || !items.length) return done(err)
-
-      var ids = items.map(function(item) {
-        return {forumName: item.forumName, subject: item.subject}
-      })
-
-      table.batchWrite({deletes: ids}, done)
-    })
-  })
 
   describe('throttledBatchWrite', function() {
     var originalBatchWrite
@@ -115,5 +104,24 @@ describe('extensions', function() {
       })
     })
   })
-})
 
+
+  describe('truncate()', function() {
+
+    before(function(done) {
+      table.batchWrite([{name: 'a', forumName: 'b', subject: 'c'}], done)
+    })
+
+    it('should remove everything from the table', function(done) {
+      table.truncate(function(err) {
+        if (err) return done(err)
+        table.scan(function(err, info) {
+          if (err) return done(err)
+          info.should.eql([])
+          done()
+        })
+      })
+    })
+  })
+
+})
