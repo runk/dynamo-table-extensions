@@ -1,5 +1,5 @@
 var async = require('async')
-var dynamoTable = require('dynamo-table')
+var dynamoTable = require('./slim')
 
 module.exports = dynamoTable
 
@@ -38,7 +38,7 @@ proto.throttledBatchWrite = function(capacityRatio, items, cb) {
 
 
 proto.truncate = function(cb) {
-  async.series([this.deleteTableAndWait.bind(this), this.createTableAndWait.bind(this)], cb)
+  async.series([this.deleteTable.bind(this), this.createTable.bind(this)], cb)
 }
 
 

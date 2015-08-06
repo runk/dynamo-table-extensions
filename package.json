@@ -1,6 +1,6 @@
 {
   "name": "dynamo-table-extensions",
-  "version": "0.0.3",
+  "version": "0.1.0",
   "description": "Adds higher-level methods to dynamo-table",
   "main": "index.js",
   "scripts": {
@@ -28,7 +28,6 @@
     "istanbul": "~0.1.44"
   },
   "dependencies": {
-    "async": "~0.2.9",
-    "dynamo-table": "~0.8.2"
+    "async": "~0.2.9"
   }
 }
