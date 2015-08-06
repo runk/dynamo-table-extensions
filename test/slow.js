@@ -20,8 +20,8 @@ describe('extensions', function() {
 
     table = dynamoTableExtended('dynamo-table-extension-test', {
       region: region,
-      key: ['name'],
-      mappings: {name: 'S'},
+      key: ['id'],
+      mappings: {id: 'N'},
       writeCapacity: 2
     })
 
@@ -109,7 +109,7 @@ describe('extensions', function() {
   describe('truncate()', function() {
 
     before(function(done) {
-      table.batchWrite([{name: 'a', forumName: 'b', subject: 'c'}], done)
+      table.batchWrite([{id: 1, forumName: 'a', subject: 'b'}], done)
     })
 
     it('should remove everything from the table', function(done) {
@@ -118,6 +118,45 @@ describe('extensions', function() {
         table.scan(function(err, info) {
           if (err) return done(err)
           info.should.eql([])
+          done()
+        })
+      })
+    })
+  })
+
+
+  describe('addNew()', function() {
+
+    before(function(done) {
+      table.batchWrite([{id: 1, forumName: 'a', subject: 'b'}], done)
+      // `dynamo-table-id` mock
+      table.nextId = function(cb) { cb(null, 2) }
+    })
+
+    it('should update existing record if `id` is defined', function(done) {
+      var record = {id: 1, forumName: 'c', subject: 'd'}
+      table.addNew(record, function(err) {
+        if (err) return done(err)
+        table.scan(function(err, records) {
+          if (err) return done(err)
+          records.should.eql([{id: 1, forumName: 'c', subject: 'd'}])
+          done()
+        })
+      })
+    })
+
+    it('should create new record if `id` is undefined', function(done) {
+      var record = {forumName: 'e', subject: 'f'}
+      table.addNew(record, function(err) {
+        if (err) return done(err)
+        table.scan(function(err, records) {
+          if (err) return done(err)
+          // dynamo doesn't guarantee any ordering
+          records.sort(function(a, b) { return a.id - b.id })
+          records.should.eql([
+            {id: 1, forumName: 'c', subject: 'd'},
+            {id: 2, forumName: 'e', subject: 'f'}
+          ])
           done()
         })
       })
